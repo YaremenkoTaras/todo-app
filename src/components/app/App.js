@@ -4,8 +4,12 @@ import ItemStatusFilter from "../item-status-filter";
 import TodoList from "../todo-list";
 import React from "react";
 import './app.css';
+import AddItemPanel from "../add-item-panel";
 
 export default class App extends React.Component {
+
+    idCounter = 100;
+
     state = {
         data: [
             {id: 1, label: 'Drink Coffee', important: false},
@@ -25,6 +29,15 @@ export default class App extends React.Component {
             };
         });
     };
+    addItem = (label) => {
+        const newItem = {id: this.idCounter++, label};
+        this.setState(({data}) => {
+            const newArr = [...data, newItem];
+            return {
+                data: newArr
+            };
+        });
+    };
 
     render() {
         return (
@@ -35,6 +48,7 @@ export default class App extends React.Component {
                     <ItemStatusFilter/>
                 </div>
                 <TodoList items={this.state.data} deleteItem={this.deleteItem}/>
+                <AddItemPanel addItem={this.addItem}/>
             </div>
         );
     }
