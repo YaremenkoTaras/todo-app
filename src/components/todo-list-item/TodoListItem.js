@@ -25,7 +25,7 @@ export default class TodoListItem extends Component {
     };
 
     render() {
-        const {label} = this.props;
+        const {label, deleteItem} = this.props;
         const {done, important} = this.state;
         const style = {
             color: important ? 'steelblue' : 'black',
@@ -49,7 +49,9 @@ export default class TodoListItem extends Component {
                         onClick={this.onMarkImportant}>
                     <i className="fa fa-exclamation"/>
                 </button>
-                <button type="button" className="btn btn-outline-danger btn-sm float-right">
+                <button type="button"
+                        className="btn btn-outline-danger btn-sm float-right"
+                        onClick={deleteItem}>
                     <i className="fa fa-trash-o"/>
                 </button>
              </span>
