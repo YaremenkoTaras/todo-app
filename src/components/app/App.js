@@ -29,8 +29,13 @@ export default class App extends React.Component {
             };
         });
     };
+
     addItem = (label) => {
-        const newItem = {id: this.idCounter++, label};
+        const newItem = {
+            id: this.idCounter++,
+            important: false,
+            label
+        };
         this.setState(({data}) => {
             const newArr = [...data, newItem];
             return {
@@ -39,16 +44,50 @@ export default class App extends React.Component {
         });
     };
 
+    markImportant = (id) => {
+        console.log('marked ', id);
+        this.setState(({data}) => {
+            return this.toggleProperty(data, id, 'important');
+        })
+    };
+
+    markDone = (id) => {
+        console.log('done ', id);
+        this.setState(({data}) => {
+            return this.toggleProperty(data, id, 'done');
+        })
+    };
+
+    toggleProperty = (arr, id, property) => {
+        const index = arr.findIndex((el) => el.id === id);
+        const oldItem = arr[index];
+        const newItem = {...oldItem, [property]: !oldItem[property]};
+        const newArr = [
+            ...arr.slice(0, index),
+            newItem,
+            ...arr.slice(index + 1)
+        ];
+        return {
+            data: newArr
+        };
+    };
+
     render() {
+        const {data} = this.state;
+        const doneCount = data.filter((e) => e.done).length;
+        const todoCount = data.length - doneCount;
         return (
             <div className="todo-app">
-                <AppHeader active={3} done={1}/>
+                <AppHeader active={todoCount} done={doneCount}/>
                 <div className="d-flex">
                     <SearchPanel/>
                     <ItemStatusFilter/>
                 </div>
-                <TodoList items={this.state.data} deleteItem={this.deleteItem}/>
-                <AddItemPanel addItem={this.addItem}/>
+                <TodoList items={this.state.data}
+                          onItemDeleted={this.deleteItem}
+                          onToggleImportant={this.markImportant}
+                          onToggleDone={this.markDone}/>
+                <AddItemPanel onItemAdded={this.addItem}/>
             </div>
         );
     }
