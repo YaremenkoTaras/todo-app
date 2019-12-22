@@ -6,7 +6,10 @@ import AppHeader from "./components/AppHeader";
 
 const App = () => {
 
-    const data = [{label: 'Drink Coffee', important: false}];
+    const data = [
+        {id: 1, label: 'Drink Coffee', important: false},
+        {id: 2, label: 'Learn React !!', important: true},
+    ];
 
     return (<div>
         <AppHeader/>
