@@ -14,7 +14,17 @@ export default class App extends React.Component {
         data: [
             {id: 1, label: 'Drink Coffee', important: false},
             {id: 2, label: 'Learn React !!', important: true},
-        ]
+        ],
+        filter: {
+            query: '',
+            all: true,
+            active: false,
+            done: false,
+        },
+        hiddenData: [],
+        get fullData() {
+            return [...this.data, ...this.hiddenData];
+        }
     };
 
     deleteItem = (id) => {
@@ -45,14 +55,12 @@ export default class App extends React.Component {
     };
 
     markImportant = (id) => {
-        console.log('marked ', id);
         this.setState(({data}) => {
             return this.toggleProperty(data, id, 'important');
         })
     };
 
     markDone = (id) => {
-        console.log('done ', id);
         this.setState(({data}) => {
             return this.toggleProperty(data, id, 'done');
         })
@@ -72,16 +80,37 @@ export default class App extends React.Component {
         };
     };
 
+    setFilters = (filter) => {
+        this.setState(({fullData, filter: oldFilter}) => {
+                const newFilter = {...oldFilter, ...filter};
+                let displayData = fullData.filter(el => el.label.includes(newFilter.query));
+                if (newFilter.done) {
+                    displayData = displayData.filter(el => el.done);
+                }
+                if (newFilter.active) {
+                    displayData = displayData.filter(e => !e.done);
+                }
+                const filteredData = fullData.filter(e => !displayData.includes(e));
+                return {
+                    data: displayData,
+                    hiddenData: filteredData,
+                    filter: newFilter
+                }
+            }
+        );
+    };
+
     render() {
-        const {data} = this.state;
+        const {fullData: data} = this.state;
         const doneCount = data.filter((e) => e.done).length;
         const todoCount = data.length - doneCount;
+
         return (
             <div className="todo-app">
                 <AppHeader active={todoCount} done={doneCount}/>
                 <div className="d-flex">
-                    <SearchPanel/>
-                    <ItemStatusFilter/>
+                    <SearchPanel onFilterChanged={this.setFilters}/>
+                    <ItemStatusFilter onFilterChanged={this.setFilters}/>
                 </div>
                 <TodoList items={this.state.data}
                           onItemDeleted={this.deleteItem}
